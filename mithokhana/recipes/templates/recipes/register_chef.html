@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Chef Registration - Mitho Khana{% endblock %}
+
+{% block content %}
+<style>
+  .container {
+    max-width: 500px;
+    margin: 60px auto;
+    background: #e6b046;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(157, 142, 142, 0.15);
+  }
+
+  h2 {
+    text-align: center;
+    color: #df3a3a;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin: 12px 0 6px;
+    color: #555;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  button {
+    width: 100%;
+    background-color: #e67e22;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #d35400;
+  }
+</style>
+
+<div class="container">
+  <!-- <form method="POST" id="chefRegisterForm"> -->
+    <form method="POST" enctype="multipart/form-data">  
+    {% csrf_token %}
+    <h2>Register as Chef</h2>
+
+    {% if form.errors %}
+      <div class="error">
+        <ul>
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <label for="id_fullname">Full Name</label>
+    <input type="text" name="fullname" id="id_fullname" value="{{ form.fullname.value|default_if_none:'' }}" required>
+
+    <label for="id_email">Email</label>
+    <input type="email" name="email" id="id_email" value="{{ form.email.value|default_if_none:'' }}" required>
+
+    <label for="id_username">Username</label>
+    <input type="text" name="username" id="id_username" value="{{ form.username.value|default_if_none:'' }}" required>
+
+    <label for="id_password">Password</label>
+    <input type="password" name="password" id="id_password" required>
+
+    <label for="id_confirm_password">Confirm Password</label>
+    <input type="password" name="confirm_password" id="id_confirm_password" required>
+
+    <label for="id_experience">Experience (Years)</label>
+    <input type="number" name="experience" id="id_experience" value="{{ form.experience.value|default_if_none:'' }}" required>
+
+    <label for="id_specialty">Specialty Dish</label>
+    <input type="text" name="specialty" id="id_specialty" value="{{ form.specialty.value|default_if_none:'' }}" required>
+
+    <label for="id_bio">Short Bio</label>
+    <textarea name="bio" id="id_bio" rows="4">{{ form.bio.value|default_if_none:'' }}</textarea>
+
+    <label for="id_photo">Profile Photo</label>
+    <input type="file" name="photo" id="id_photo">
+
+    <button type="submit">Register</button>
+  </form>
+</div>
+
+<script>
+  document.getElementById("chefRegisterForm").addEventListener("submit", function(e) {
+    const pw = document.getElementById("id_password").value;
+    const cpw = document.getElementById("id_confirm_password").value;
+    if (pw.length < 6) {
+      alert("Password must be at least 6 characters long.");
+      e.preventDefault();
+    } else if (pw !== cpw) {
+      alert("Passwords do not match.");
+      e.preventDefault();
+    }
+  });
+</script>
+{% endblock %}

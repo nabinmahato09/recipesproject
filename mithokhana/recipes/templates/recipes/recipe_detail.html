@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block title %}{{ recipe.title }} - Mitho Khana{% endblock %}
+
+{% block content %}
+<style>
+.container{
+  padding: 30px;
+}
+.video-container {
+  position: relative;
+  margin: 10px;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.video-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+</style>
+<div class="container">
+  <!-- Recipe Image + Info -->
+  <div class="row mb-4">
+    <div class="col-12 col-md-6 mb-4">
+      {% if recipe.image %}
+        <img src="{{ recipe.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ recipe.title }}">
+      {% endif %}
+      {% if recipe.video %}
+        <div class="video-container">
+          <video controls>
+          <source src="{{ recipe.video.url }}" type="video/mp4">
+          Your browser does not support the video tag.
+        </div>
+      {% endif %}
+    </div>
+    <div class="col-12 col-md-6 mb-4">
+      <h2>{{ recipe.title }}</h2>
+      <p class="text-muted">{{ recipe.description }}</p>
+
+      <h5>Ingredients</h5>
+        <ul class="list-group mb-4">
+          {% for ing in recipe.ingredients.all %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              {{ ing.name }} — <em>{{ ing.quantity }}</em>
+              {% if ing.cook_time %}<span class="badge bg-secondary">{{ ing.cook_time }}</span>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+
+      <span class="badge bg-secondary">{{ recipe.category.name }}</span>
+      <span class="badge bg-info text-dark">{{ recipe.region.name }}</span>
+      <p class="mt-3">❤️ {{ recipe.likes.count }} Likes</p>
+
+      <!-- ❤️ Like Button -->
+      <form id="like-form" class="d-inline">
+        <button type="button" id="like-btn" class="btn btn-outline-danger btn-sm">
+          {% if user in recipe.likes.all %}
+            ❤️ Liked (<span id="like-count">{{ recipe.likes.count }}</span>)
+          {% else %}
+            🤍 Like (<span id="like-count">{{ recipe.likes.count }}</span>)
+          {% endif %}
+        </button>
+      </form>
+
+
+      <!-- 🔖 Bookmark Button -->
+      <form id="bookmark-form" class="d-inline">
+        <button type="button" id="bookmark-btn" class="btn btn-outline-primary btn-sm">
+          {% if user in recipe.bookmarked_by.all %}
+      🔖 Bookmarked
+          {% else %}
+          ➕ Bookmark
+          {% endif %}
+        </button>
+      </form>
+
+
+      {% if user == recipe.created_by %}
+        <a href="{% url 'download_recipe' recipe.pk %}" class="btn btn-outline-dark btn-sm">⬇️ Download PDF</a>
+
+        <a href="{% url 'edit_recipe' recipe.pk %}" class="btn btn-warning btn-sm">✏️ Edit</a>
+        <a href="{% url 'delete_recipe' recipe.pk %}" class="btn btn-danger btn-sm">🗑 Delete</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Comments -->
+  <h4 class="mb-3">Comments</h4>
+  <div id="comments-container">
+    {% for comment in comments %}
+      <div class="border rounded p-3 mb-2 bg-light" id="comment-{{ comment.id }}">
+        <strong>{{ comment.user.username }}</strong>
+        <p>{{ comment.text }}</p>
+        <small class="text-muted">{{ comment.created_at }}</small>
+
+        {% if comment.user == user %}
+          <button class="btn btn-sm btn-outline-danger float-end" onclick="deleteComment({{ comment.id }})">Delete</button>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <button class="btn btn-sm btn-link text-primary reply-btn" data-comment-id="{{ comment.id }}">↪️ Reply</button>
+        {% endif %}
+
+        <div class="ms-4 mt-3" id="replies-{{ comment.id }}">
+          {% for reply in comment.replies.all %}
+            <div class="border rounded p-2 mb-2 bg-white" id="comment-{{ reply.id }}">
+              <strong>{{ reply.user.username }}</strong>
+              <p>{{ reply.text }}</p>
+              <small class="text-muted">{{ reply.created_at }}</small>
+              {% if reply.user == user %}
+                <button class="btn btn-sm btn-outline-danger float-end" onclick="deleteComment({{ reply.id }})">Delete</button>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">No comments yet.</p>
+    {% endfor %}
+  </div>
+
+  <!-- AJAX Comment Form -->
+  {% if user.is_authenticated %}
+    <form id="comment-form" class="mt-4">
+      {% csrf_token %}
+      <div class="mb-3">
+        <textarea name="text" class="form-control" rows="3" placeholder="Write a comment..." required></textarea>
+        <input type="hidden" name="parent_id" value="">
+      </div>
+      <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
+  {% else %}
+    <p><a href="{% url 'login' %}">Login</a> to post a comment.</p>
+  {% endif %}
+</div>
+
+<script>
+  document.querySelectorAll('.reply-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const form = document.getElementById("comment-form");
+      const parentInput = form.querySelector("input[name='parent_id']");
+      parentInput.value = button.dataset.commentId;
+      form.scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
+  document.getElementById("comment-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const text = form.querySelector("textarea").value;
+    const parentId = form.querySelector("input[name='parent_id']").value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch("{% url 'add_comment_ajax' recipe.pk %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrfToken,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        text: text,
+        parent_id: parentId
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) return alert(data.error);
+      const container = parentId ? document.getElementById("replies-" + parentId) : document.getElementById("comments-container");
+      const div = document.createElement("div");
+      div.className = "border rounded p-3 mb-2 " + (parentId ? "bg-white ms-4" : "bg-light");
+      div.id = `comment-${data.id}`;
+      div.innerHTML = `
+        <strong>${data.username}</strong>
+        <p>${data.text}</p>
+        <small class="text-muted">${data.created_at}</small>
+      `;
+      container.prepend(div);
+      form.reset();
+      form.querySelector("input[name='parent_id']").value = "";
+    });
+  });
+
+  function deleteComment(commentId) {
+    if (!confirm("Are you sure you want to delete this comment?")) return;
+    fetch(`/comment/${commentId}/delete/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const commentDiv = document.getElementById(`comment-${commentId}`);
+        if (commentDiv) commentDiv.remove();
+      } else {
+        alert("Error: " + (data.error || "Could not delete"));
+      }
+    });
+  }
+
+  
+    document.getElementById("bookmark-btn").addEventListener("click", function () {
+      fetch("{% url 'toggle_bookmark' recipe.pk %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        const btn = document.getElementById("bookmark-btn");
+        if (data.bookmarked) {
+          btn.textContent = "🔖 Bookmarked";
+          btn.classList.remove("btn-outline-primary");
+          btn.classList.add("btn-primary");
+        } else {
+          btn.textContent = "➕ Bookmark";
+          btn.classList.remove("btn-primary");
+          btn.classList.add("btn-outline-primary");
+        }
+      });
+    });
+<!-- javascript to handle like toggle -->
+    document.getElementById("like-btn").addEventListener("click", function () {
+      fetch("{% url 'toggle_like' recipe.pk %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        const btn = document.getElementById("like-btn");
+        const count = document.getElementById("like-count");
+        if (data.liked) {
+          btn.innerHTML = `❤️ Liked (<span id="like-count">${data.likes_count}</span>)`;
+        } else {
+          btn.innerHTML = `🤍 Like (<span id="like-count">${data.likes_count}</span>)`;
+        }
+      });
+    });
+    
+  
+  
+</script>
+{% endblock %}

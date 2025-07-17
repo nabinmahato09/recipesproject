@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Chef {{ chef.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>👨‍🍳 {{ chef.username }}'s Profile</h1>
+    {% if chef_obj %}
+      <p>Experience: {{ chef_obj.experience }} years</p>
+      <p>Specialty: {{ chef_obj.specialty }}</p>
+      <p>Bio: {{ chef_obj.bio }}</p>
+      {% if chef_obj.photo %}
+        <img src="{{ chef_obj.photo.url }}" alt="Chef Photo" style="max-width:200px;">
+      {% endif %}
+    {% endif %}
+    
+    <h3>Recipes by {{ chef.username }}</h3>
+    <div class="row">
+      {% for recipe in recipes %}
+        <div class="col-md-4 mb-3">
+          <div class="card">
+            {% if recipe.image %}
+            <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}">
+            {% endif %}
+
+            <div class="card-body">
+              <h5 class="card-title">{{ recipe.title }}</h5>
+              <p>{{ recipe.description|truncatewords:20 }}</p>
+              <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-primary">View Recipe</a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p>No recipes by this chef yet.</p>
+      {% endfor %}
+    </div>
+</div>
+{% endblock %}

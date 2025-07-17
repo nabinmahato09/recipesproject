@@ -1,0 +1,113 @@
+{% extends "base.html" %} 
+{% block title %}My Profile - Mitho Khana{% endblock %} {% block content %}
+<style>
+
+  .img-fluid { 
+    max-width: 150px"
+  }
+
+    .card-img-top {
+    object-fit: cover;
+    height: 200px;
+  }
+</style>
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">My Profile</h2>
+
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-8">
+          <p><strong>Username:</strong> {{ user.username }}</p>
+          <p><strong>Email:</strong> {{ user.email }}</p>
+          {% if user.first_name %}
+          <p><strong>Full Name:</strong> {{ user.first_name }}</p>
+          {% endif %}
+        </div>
+
+        {% if chef_profile and chef_profile.photo %}
+        <div class="col-md-4 text-center">
+          <img
+            src="{{ chef_profile.photo.url }}"
+            alt="Chef Photo"
+            class="img-fluid rounded-circle shadow-sm"
+          />
+        </div>
+        {% endif %}
+      </div>
+
+      {% if chef_profile %}
+      <hr />
+      <h5 class="mt-3">👨‍🍳 Chef Details</h5>
+      <p><strong>Experience:</strong> {{ chef_profile.experience }} years</p>
+      <p><strong>Specialty:</strong> {{ chef_profile.specialty }}</p>
+      <p><strong>Bio:</strong> {{ chef_profile.bio }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <h4 class="mt-4 mb-3">🍽️ My Recipes</h4>
+  {% if my_recipes %}
+  <div class="list-group">
+    {% for recipe in my_recipes %}
+    <div
+      class="list-group-item d-flex justify-content-between align-items-center"
+    >
+      <div>{{ recipe.title }}</div>
+      <div>
+        <a
+          href="{% url 'recipe_detail' recipe.pk %}"
+          class="btn btn-sm btn-outline-info"
+          >View</a
+        >
+        <a
+          href="{% url 'edit_recipe' recipe.pk %}"
+          class="btn btn-sm btn-outline-warning"
+          >Edit</a
+        >
+        <a
+          href="{% url 'delete_recipe' recipe.pk %}"
+          class="btn btn-sm btn-outline-danger"
+          >Delete</a
+        >
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-muted">You haven't uploaded any recipes yet.</p>
+  {% endif %}
+
+  <h4 class="mb-3">📥 Bookmarked Recipes</h4>
+  {% if bookmarked %}
+  <div class="row">
+    {% for recipe in bookmarked %}
+    <div class="col-md-4 mb-3">
+      <div class="card h-100 shadow-sm">
+        {% if recipe.image %}
+        <img
+          src="{{ recipe.image.url }}"
+          class="card-img-top"
+          alt="{{ recipe.title }}"
+        />
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ recipe.title }}</h5>
+          <a
+            href="{% url 'recipe_detail' recipe.pk %}"
+            class="btn btn-sm btn-primary mt-auto"
+            >View</a
+          >
+          
+
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-muted">You haven't bookmarked any recipes yet.</p>
+  
+  {% endif %}
+</div>
+{% endblock %}

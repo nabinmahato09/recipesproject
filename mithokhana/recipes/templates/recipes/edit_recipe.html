@@ -1,0 +1,159 @@
+{% load i18n %}
+
+<h1 class="mb-4 ">{% trans "Edit Recipe" %}</h1>
+
+<style>
+  form {
+    max-width: 700px;
+    margin: 0 auto;
+    background: #f9f9f9;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+
+  form label {
+    font-weight: 600;
+    margin-top: 12px;
+    display: block;
+  }
+
+  form input[type="text"],
+  form textarea,
+  form select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  form textarea {
+    min-height: 100px;
+  }
+
+  input[type="file"] {
+    margin-top: 6px;
+  }
+
+  .ingredient-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    align-items: center;
+  }
+
+  .ingredient-row input {
+    flex: 1;
+  }
+
+  .ingredient-row button {
+    background: #ff6b6b;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+
+  .ingredient-row button:hover {
+    background: #ff4757;
+  }
+
+  button.add-btn, button[type="submit"] {
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: #2ecc71;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  button.add-btn {
+    background: #3498db;
+  }
+
+  button.add-btn:hover {
+    background: #2980b9;
+  }
+
+  button[type="submit"]:hover {
+    background: #27ae60;
+  }
+
+  video {
+    display: block;
+    margin: 8px 0;
+    border-radius: 8px;
+  }
+</style>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  
+  <label>{% trans "Title" %}:</label>
+  <input type="text" name="title" value="{{ recipe.title }}" required>
+
+  <label>{% trans "Description" %}:</label>
+  <textarea name="description" required>{{ recipe.description }}</textarea>
+
+  <label>{% trans "Category" %}:</label>
+  <select name="category" required>
+    {% for cat in categories %}
+    <option value="{{ cat.id }}" {% if recipe.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>{% trans "Region" %}:</label>
+  <select name="region" required>
+    {% for reg in regions %}
+    <option value="{{ reg.id }}" {% if recipe.region.id == reg.id %}selected{% endif %}>{{ reg.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>{% trans "Image" %}:</label>
+  <input type="file" name="image">
+
+  {% if recipe.video %}
+    <label>Current Video:</label>
+    <video width="300" controls>
+      <source src="{{ recipe.video.url }}" type="video/mp4">
+    </video>
+  {% endif %}
+  <label>{% trans "Video" %}:</label>
+  <input type="file" name="video">
+
+  <h3>{% trans "Ingredients" %}</h3>
+  <div id="ingredients-wrapper">
+    {% for ingredient in recipe.ingredients.all %}
+    <div class="ingredient-row">
+      <input type="text" name="ingredient_name" placeholder="Name" value="{{ ingredient.name }}" required>
+      <input type="text" name="ingredient_quantity" placeholder="Quantity" value="{{ ingredient.quantity }}" required>
+      <input type="text" name="ingredient_cook_time" placeholder="Cook Time" value="{{ ingredient.cook_time }}">
+      <button type="button" onclick="this.parentElement.remove()">❌</button>
+    </div>
+    {% endfor %}
+  </div>
+
+  <button type="button" class="add-btn" onclick="addIngredient()">{% trans "Add Ingredient"%}</button>
+
+  <button type="submit">{% trans "Save Changes"%}</button>
+</form>
+
+<script>
+function addIngredient() {
+  const wrapper = document.getElementById("ingredients-wrapper");
+  const row = document.createElement("div");
+  row.className = "ingredient-row";
+  row.innerHTML = `
+    <input type="text" name="ingredient_name" placeholder="Name" required>
+    <input type="text" name="ingredient_quantity" placeholder="Quantity" required>
+    <input type="text" name="ingredient_cook_time" placeholder="Cook Time">
+    <button type="button" onclick="this.parentElement.remove()">❌</button>
+  `;
+  wrapper.appendChild(row);
+}
+</script>

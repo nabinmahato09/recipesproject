@@ -1,0 +1,311 @@
+<!-- templates/recipes/recipe_list.html -->
+{% extends "base.html" %}
+
+{% block title %}Mitho Khana{% endblock %}
+
+{% block content %}
+{% load i18n %}
+
+<h1 class="mt-4 text-center fw-bold">{% trans "Welcome to Mitho Khana" %}</h1>
+
+<style>
+  /* Slider styles */
+  #highlight-slider {
+    position: relative;
+    min-height: 350px;
+    overflow: hidden;
+    border-radius: 16px;
+    padding: 24px;
+    background: linear-gradient(135deg, #f9f9f9, #e2e2d0);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .slide {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    display: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  .slide.active {
+    opacity: 1;
+    display: block;
+    position: relative;
+  }
+
+  .slide h3 a {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    text-decoration: none;
+  }
+
+  .slide h3 a:hover {
+    text-decoration: underline;
+  }
+
+  .progress-bar-wrapper {
+    height: 6px;
+    background-color: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #ffa502);
+    transition: width 5s linear;
+  }
+
+  .slider-controls button {
+    font-size: 16px;
+    border: none;
+    background: #ff6b6b;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 50px;
+    margin: 0 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+
+  .slider-controls button:hover {
+    background: #ff4757;
+  }
+
+  .slide img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+
+  /* Search form styles */
+  form .form-control, form .form-select {
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+  }
+
+  form .btn-primary {
+    background: #ff6b6b;
+    border: none;
+  }
+
+  form .btn-primary:hover {
+    background: #ff4757;
+  }
+
+  /* Card styles */
+  .card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-img-top {
+    object-fit: cover;
+    height: 200px;
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+
+  .card-footer {
+    background: #fafafa;
+  }
+
+  .badge {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+</style>
+
+<div class="container my-4">
+  <div id="highlight-slider">
+    {% for recipe in popular_recipes %}
+    <div class="slide {% if forloop.first %}active{% endif %}">
+      <div class="text-center">
+        <h3><a href="{% url 'recipe_detail' recipe.pk %}">{{ recipe.title }}</a></h3>
+      </div>
+      <div class="row align-items-center mt-3">
+        {% if recipe.image %}
+        <div class="col-md-4 text-center">
+          <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}">
+        </div>
+        {% endif %}
+        <div class="col">
+          <p><strong>{% trans "Category" %}:</strong> {{ recipe.category.name }}</p>
+          <p>{{ recipe.description|truncatewords:25 }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-wrapper mt-3">
+      <div class="progress-bar" id="slider-progress"></div>
+    </div>
+
+    <!-- Manual Controls -->
+    <div class="slider-controls text-center mt-3">
+      <button onclick="prevSlide()">⏮ Prev</button>
+      <button onclick="nextSlide()">⏭ Next</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll("#highlight-slider .slide");
+  const progressBar = document.getElementById("slider-progress");
+  let current = 0;
+  let interval;
+
+  function showSlide(index) {
+    slides.forEach(slide => slide.classList.remove("active"));
+    slides[index].classList.add("active");
+
+    progressBar.style.transition = "none";
+    progressBar.style.width = "0%";
+    setTimeout(() => {
+      progressBar.style.transition = "width 5s linear";
+      progressBar.style.width = "100%";
+    }, 50);
+  }
+
+  function nextSlide() {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+  }
+
+  function prevSlide() {
+    current = (current - 1 + slides.length) % slides.length;
+    showSlide(current);
+  }
+
+  function startAutoSlide() {
+    interval = setInterval(nextSlide, 5000);
+  }
+
+  function resetAutoSlide() {
+    clearInterval(interval);
+    startAutoSlide();
+  }
+
+  let touchStartX = 0;
+  let touchEndX = 0;
+  const slider = document.getElementById("highlight-slider");
+
+  slider.addEventListener("touchstart", e => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  slider.addEventListener("touchend", e => {
+    touchEndX = e.changedTouches[0].screenX;
+    if (touchEndX < touchStartX - 50) {
+      nextSlide();
+      resetAutoSlide();
+    }
+    if (touchEndX > touchStartX + 50) {
+      prevSlide();
+      resetAutoSlide();
+    }
+  });
+
+  if (slides.length > 0) {
+    showSlide(current);
+    startAutoSlide();
+  }
+</script>
+
+<h1 class="mb-4 mt-5">🍲 {% trans "Explore Mitho Recipes" %}</h1>
+
+<form method="get" class="row g-3 mb-4">
+  <div class="col-md-4">
+    <input type="text" class="form-control" name="q" placeholder="Search by title or description..." value="{{ query }}">
+  </div>
+
+  <div class="col-md-3">
+    <select name="category" class="form-select">
+      <option value="">{% trans "All Categories" %}</option>
+      {% for cat in categories %}
+      <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == selected_category %}selected{% endif %}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <select name="region" class="form-select">
+      <option value="">{% trans "All Regions" %}</option>
+      {% for r in regions %}
+      <option value="{{ r.id }}" {% if r.id|stringformat:"s" == selected_region %}selected{% endif %}>{{ r.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2 d-grid">
+    <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+  </div>
+</form>
+
+<div class="row">
+  {% if recipes %}
+    {% for recipe in recipes %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        {% if recipe.image %}
+        <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ recipe.title }}</h5>
+          <p class="card-text">{{ recipe.description|truncatewords:20 }}</p>
+          <span class="badge bg-secondary">{{ recipe.category.name }}</span>
+          <span class="badge bg-info text-dark">{{ recipe.region.name }}</span>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-outline-primary">{% trans "View" %}</a>
+          <small class="text-muted">❤️ {{ recipe.likes.count }}</small>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">{% trans "No recipes found matching your Search." %}</p>
+  {% endif %}
+</div>
+
+ <h2 class="mt-4">Our Chefs</h2>
+<div class="row">
+  {% for chef in chefs %}
+    <div class="col-md-3 col-sm-6 mb-4">
+      <div class="card shadow-sm text-center"> 
+        <!-- Example: If you have profile images -->
+        {# <img src="{{ chef.profile.image.url }}" class="card-img-top" alt="{{ chef.username }}"> #}
+
+        <!-- Placeholder avatar -->
+        <div class="p-3">
+          <div class="bg-secondary rounded-circle mx-auto mb-2" style="width:80px; height:80px;"></div>
+          <h5 class="card-title">{{ chef.username }}</h5>
+          <p class="text-muted small">{{ chef.email }}</p>
+          <a href="{% url 'chef_profile' chef.id %}" class="btn btn-sm btn-primary">View Profile</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>No chefs found.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

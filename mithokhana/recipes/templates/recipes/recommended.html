@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>🎯 Personalized Recommendations</h2>
+
+{% if recommended_recipes %}
+  <div class="row">
+    {% for recipe in recommended_recipes %}
+      <div class="col-md-4">
+        <div class="card mb-3">
+          <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ recipe.title }}</h5>
+            <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-primary">View Recipe</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No recommendations yet. Try liking some recipes first!</p>
+{% endif %}
+
+{% endblock %}

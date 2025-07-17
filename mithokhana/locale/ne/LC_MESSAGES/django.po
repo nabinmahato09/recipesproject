@@ -1,0 +1,94 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ne\n"
+
+msgid "Mitho Khana"
+msgstr "मिठो खाना"
+
+msgid "Welcome to Mitho Khana"
+msgstr "मिठो खाना मा स्वागत छ"
+
+msgid "Upload Recipe"
+msgstr "रेसिपी अपलोड गर्नुहोस्"
+
+msgid "Edit Recipe"
+msgstr "रेसिपी सम्पादन गर्नुहोस्"
+
+msgid "Save Changes"
+msgstr "परिवर्तनहरू सुरक्षित गर्नुहोस्"
+
+msgid "Title"
+msgstr "शीर्षक"
+
+msgid "Description"
+msgstr "विवरण"
+
+msgid "Category"
+msgstr "कोटि"
+msgid "All Categories"
+msgstr "सबै कोटिहरू"
+
+msgid "Region"
+msgstr "क्षेत्र"
+
+msgid "All Regions"
+msgstr "सबै क्षेत्रहरू"
+
+msgid "Image"
+msgstr "तस्बिर"
+
+msgid "Video"
+msgstr "भिडियो"
+
+msgid "Ingredients"
+msgstr "सामग्रीहरू"
+
+msgid "Name"
+msgstr "नाम"
+
+msgid "Quantity"
+msgstr "परिमाण"
+
+msgid "Cook Time"
+msgstr "पाक्ने समय"
+
+msgid "Add Ingredient"
+msgstr "सामग्री थप्नुहोस्"
+
+msgid "Profile"
+msgstr "प्रोफाइल"
+
+msgid "Login"
+msgstr "लग - इन"
+
+msgid "Logout"
+msgstr "लगआउट"
+
+msgid "Register"
+msgstr "दर्ता गर्नुहोस्"
+
+msgid "Festivals"
+msgstr "चाडपर्व"
+
+msgid "Comment"
+msgstr "टिप्पणी"
+
+msgid "Post Comment"
+msgstr "टिप्पणी गर्नुहोस्"
+
+msgid "Download PDF"
+msgstr "PDF डाउनलोड गर्नुहोस्"
+
+msgid "Explore Mitho Recipes"
+msgstr"मिठो रेसिपीहरू अन्वेषण गर्नुहोस्"
+
+msgid "Search"
+msgstr "खोज"
+
+msgid "No recipes found matching your criteria."
+msgstr "तपाईंको मापदण्डसँग मेल खाने कुनै पनि रेसिपी भेटिएन।"
+
+msgid "View"
+msgstr "दृश्य"
+

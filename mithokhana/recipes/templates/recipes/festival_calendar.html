@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Festival Calendar - Mitho Khana{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">📅 Festival-Based Recipe Calendar</h2>
+
+  {% if festivals %}
+    {% for festival in festivals %}
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+          <div>
+            <h5 class="mb-0">{{ festival.name }}</h5>
+            <small>{{ festival.date|date:"F j, Y" }}</small>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <p>{{ festival.description }}</p>
+
+          {% if festival.recipes.all %}
+            <h6 class="fw-bold">🍽️ Featured Recipes:</h6>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+              {% for recipe in festival.recipes.all %}
+                <div class="col">
+                  <div class="card h-100 border-0 shadow-sm">
+                    {% if recipe.image %}
+                      <img src="{{ recipe.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ recipe.title }}">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                      <h6 class="card-title">{{ recipe.title }}</h6>
+                      <p class="text-muted small">{{ recipe.description|truncatewords:15 }}</p>
+                      <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-outline-primary mt-auto">View Recipe</a>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted fst-italic">No recipes added for this festival yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted text-center">No upcoming festivals added yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

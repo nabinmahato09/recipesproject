@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Login - Mitho Khana{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">🔐 Login to Your Account</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Login</button>
+    <a href="{% url 'recipe_list' %}" class="btn btn-secondary">Cancel</a>
+   
+  </form>
+
+</div>
+{% endblock %}
