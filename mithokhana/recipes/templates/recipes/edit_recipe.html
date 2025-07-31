@@ -115,7 +115,7 @@
   </select>
 
   <label>{% trans "Image" %}:</label>
-  <input type="file" name="image">
+  <input type="file" name="image" accept="image/*">
 
   {% if recipe.video %}
     <label>Current Video:</label>
@@ -124,21 +124,22 @@
     </video>
   {% endif %}
   <label>{% trans "Video" %}:</label>
-  <input type="file" name="video">
+  <input type="file" name="video" accept="video/*">
 
   <h3>{% trans "Ingredients" %}</h3>
-  <div id="ingredients-wrapper">
-    {% for ingredient in recipe.ingredients.all %}
-    <div class="ingredient-row">
-      <input type="text" name="ingredient_name" placeholder="Name" value="{{ ingredient.name }}" required>
-      <input type="text" name="ingredient_quantity" placeholder="Quantity" value="{{ ingredient.quantity }}" required>
-      <input type="text" name="ingredient_cook_time" placeholder="Cook Time" value="{{ ingredient.cook_time }}">
-      <button type="button" onclick="this.parentElement.remove()">❌</button>
-    </div>
-    {% endfor %}
+<div id="ingredients-wrapper">
+  {% for ingredient in recipe.ingredients.all %}
+  <div class="ingredient-row">
+    <input type="text" name="ingredient_name[]" placeholder="Name" value="{{ ingredient.name }}" required>
+    <input type="text" name="ingredient_quantity[]" placeholder="Quantity" value="{{ ingredient.quantity }}">
+    <input type="text" name="ingredient_cook_time[]" placeholder="Cook Time" value="{{ ingredient.cook_time }}">
+    <input type="text" name="ingredient_note[]" placeholder="Note" value="{{ ingredient.note|default:'' }}">
+    <button type="button" onclick="this.parentElement.remove()">❌</button>
   </div>
+  {% endfor %}
+</div>
 
-  <button type="button" class="add-btn" onclick="addIngredient()">{% trans "Add Ingredient"%}</button>
+<button type="button" class="add-btn" onclick="addIngredient()">{% trans "Add Ingredient" %}</button>
 
   <button type="submit">{% trans "Save Changes"%}</button>
 </form>
@@ -149,11 +150,13 @@ function addIngredient() {
   const row = document.createElement("div");
   row.className = "ingredient-row";
   row.innerHTML = `
-    <input type="text" name="ingredient_name" placeholder="Name" required>
-    <input type="text" name="ingredient_quantity" placeholder="Quantity" required>
-    <input type="text" name="ingredient_cook_time" placeholder="Cook Time">
+    <input type="text" name="ingredient_name[]" placeholder="Name" required>
+    <input type="text" name="ingredient_quantity[]" placeholder="Quantity">
+    <input type="text" name="ingredient_cook_time[]" placeholder="Cook Time">
+    <input type="text" name="ingredient_note[]" placeholder="Note">
     <button type="button" onclick="this.parentElement.remove()">❌</button>
   `;
   wrapper.appendChild(row);
 }
 </script>
+

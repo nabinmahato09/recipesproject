@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Followers - {{ user_obj.username }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h3>Followers of {{ user_obj.username }}</h3>
+  <ul class="list-group">
+    {% for user in followers %}
+      <li class="list-group-item">
+        <a href="{% url 'view_profile' user.username %}">{{ user.username }}</a>
+      </li>
+    {% empty %}
+      <li class="list-group-item text-muted">No followers yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

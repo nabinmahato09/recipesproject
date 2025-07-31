@@ -1,38 +1,94 @@
 {% extends "base.html" %}
-
 {% block title %}Chef {{ chef.username }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1>👨‍🍳 {{ chef.username }}'s Profile</h1>
-    {% if chef_obj %}
-      <p>Experience: {{ chef_obj.experience }} years</p>
-      <p>Specialty: {{ chef_obj.specialty }}</p>
-      <p>Bio: {{ chef_obj.bio }}</p>
-      {% if chef_obj.photo %}
-        <img src="{{ chef_obj.photo.url }}" alt="Chef Photo" style="max-width:200px;">
-      {% endif %}
-    {% endif %}
-    
-    <h3>Recipes by {{ chef.username }}</h3>
-    <div class="row">
-      {% for recipe in recipes %}
-        <div class="col-md-4 mb-3">
-          <div class="card">
-            {% if recipe.image %}
-            <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}">
-            {% endif %}
+    <h1>👨‍🍳 {{ chef.username }}’s Profile</h1>
 
-            <div class="card-body">
-              <h5 class="card-title">{{ recipe.title }}</h5>
-              <p>{{ recipe.description|truncatewords:20 }}</p>
-              <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-primary">View Recipe</a>
+    {% if user.is_authenticated and user.username != chef.username %}
+      <form id="follow-form" class="mb-3">
+        <button id="follow-btn"
+                data-username="{{ chef.username }}"
+                class="btn btn-outline-primary btn-sm rounded-pill px-4">
+          {% if is_following %}Following{% else %}Follow{% endif %}
+        </button>
+      </form>
+    {% endif %}
+
+    {% if profile %}
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <p><strong>Experience:</strong> {{ profile.experience }} year{{ profile.experience|pluralize }}</p>
+                <p><strong>Specialty:</strong> {{ profile.specialty }}</p>
+                <p><strong>Bio:</strong> {{ profile.bio }}</p>
             </div>
-          </div>
+            <div class="col-md-4">
+                {% if profile.photo %}
+                    <img src="{{ profile.photo.url }}" alt="Chef Photo" style="max-width:200px;" class="img-thumbnail">
+                {% else %}
+                    <img src="/static/default_profile.png" alt="Default Photo" class="img-thumbnail" style="max-width:200px;">
+                {% endif %}
+            </div>
         </div>
-      {% empty %}
-        <p>No recipes by this chef yet.</p>
-      {% endfor %}
+    {% else %}
+        <p>This user is not a registered chef.</p>
+    {% endif %}
+
+    <h3 class="mt-4">Recipes by {{ chef.username }}</h3>
+    <div class="row">
+        {% for recipe in recipes %}
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                {% if recipe.image %}
+                    <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ recipe.title }}</h5>
+                    <p class="card-text">{{ recipe.description|truncatewords:20 }}</p>
+                    <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-primary">View Recipe</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p>No recipes by this chef yet.</p>
+        {% endfor %}
     </div>
 </div>
+
+<script>
+  const followBtn = document.getElementById('follow-btn');
+  if (followBtn) {
+    const username = followBtn.dataset.username;
+    followBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      fetch(`/profile/${username}/toggle_follow/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      })
+      .then(res => res.json())
+      .then(data => {
+        followBtn.textContent = data.following ? "Following" : "Follow";
+        followBtn.classList.toggle("btn-outline-primary", !data.following);
+        followBtn.classList.toggle("btn-outline-danger", data.following);
+      });
+
+      followBtn.addEventListener('mouseover', () => {
+        if (followBtn.textContent === "Following") {
+          followBtn.textContent = "Unfollow";
+        }
+      });
+
+      followBtn.addEventListener('mouseout', () => {
+        if (followBtn.textContent === "Unfollow") {
+          followBtn.textContent = "Following";
+        }
+      });
+    });
+  }
+</script>
 {% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Our Chefs{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">👨‍🍳 Meet Our Chefs</h2>
+  <div class="row">
+    {% for chef in chefs %}
+      {% if chef.profile %}
+        <div class="col-md-3 col-sm-6 mb-4">
+          <div class="card text-center shadow-sm">
+            {% if chef.profile.photo %}
+              <img src="{{ chef.profile.photo.url }}" class="card-img-top rounded-circle mt-3 mx-auto" style="width: 100px; height: 100px; object-fit: cover;">
+            {% else %}
+              <div class="bg-secondary rounded-circle mx-auto mt-3" style="width: 100px; height: 100px;"></div>
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ chef.username }}</h5>
+              <p class="card-text small">{{ chef.profile.specialty }}</p>
+              <a href="{% url 'view_profile' chef.username %}" class="btn btn-sm btn-outline-primary">View Profile</a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -96,6 +96,7 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/'  # After login, redirect here
 LOGOUT_REDIRECT_URL = '/login/'
 
+SITE_DOMAIN = "http://127.0.0.1:8000"  # or your production domain
 
 
 # Password validation

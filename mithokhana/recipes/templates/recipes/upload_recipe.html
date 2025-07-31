@@ -126,27 +126,21 @@
     </div>
 
     <h6 class="mt-4 mb-2">{% trans "Ingredients" %}</h6>
+<div id="ingredients-wrapper">
+  {% if recipe %}
+    {% for ingredient in recipe.ingredients.all %}
+      <div class="ingredient-row">
+        <input type="text" name="ingredient_name" placeholder="Name" value="{{ ingredient.name }}" required>
+        <input type="text" name="ingredient_quantity" placeholder="Quantity (optional)" value="{{ ingredient.quantity }}">
+        <input type="text" name="ingredient_cook_time" placeholder="Cook Time (optional)" value="{{ ingredient.cook_time }}">
+        <input type="text" name="ingredient_note" placeholder="Short note (e.g. to taste, for frying)" value="{{ ingredient.note }}">
+        <button type="button" onclick="this.parentElement.remove()">❌</button>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+<button type="button" onclick="addIngredient()">➕ {% trans "Add Ingredient" %}</button>
 
-    <div id="ingredients-wrapper">
-      {% for ingredient in recipe.ingredients.all %}
-        <div class="ingredient-row">
-          <input type="text" name="ingredient_name" placeholder="Name" value="{{ ingredient.name }}" required>
-          <input type="number" name="ingredient_quantity" placeholder="Quantity" value="{{ ingredient.quantity|default_if_none:'' }}" min="1" step="0.1" required>
-          <select name="ingredient_unit">
-            <option value="g" {% if "g" in ingredient.quantity %}selected{% endif %}>g</option>
-            <option value="cup" {% if "cup" in ingredient.quantity %}selected{% endif %}>cup</option>
-            <option value="ml" {% if "ml" in ingredient.quantity %}selected{% endif %}>ml</option>
-            <option value="tbsp" {% if "tbsp" in ingredient.quantity %}selected{% endif %}>tbsp</option>
-            <option value="tsp" {% if "tsp" in ingredient.quantity %}selected{% endif %}>tsp</option>
-            <option value="pieces" {% if "pieces" in ingredient.quantity %}selected{% endif %}>pieces</option>
-          </select>
-          <input type="text" name="ingredient_cook_time" placeholder="Cook Time (e.g., 10 min)" value="{{ ingredient.cook_time }}">
-          <button type="button" onclick="this.parentElement.remove()">❌</button>
-        </div>
-      {% endfor %}
-    </div>
-
-    <button type="button" onclick="addIngredient()">➕ {% trans "Add Ingredient" %}</button>
 
     <div class="mb-3 mt-4">
       <label class="form-label">📂 {% trans "Category" %}</label>
@@ -170,18 +164,19 @@
 
     <div class="mb-3">
       <label class="form-label">🖼️ {% trans "Image" %}</label>
-      <input type="file" name="image" class="form-control">
+      <input type="file" name="image" accept="image/*">
     </div>
 
     <div class="mb-3">
       <label class="form-label">🎥 {% trans "Video" %}</label>
-      <input type="file" name="video" class="form-control">
+      <input type="file" name="video" accept="video/*">
     </div>
 
     <div class="mb-3">
       <label class="form-label">📝 {% trans "Description" %}</label>
       <textarea name="description" rows="4" class="form-control" required></textarea>
     </div>
+
 
     <button type="submit" class="btn btn-success">{% trans "Upload Recipe" %}</button>
     <a href="{% url 'recipe_list' %}" class="btn btn-secondary ms-2">{% trans "Back to List" %}</a>
@@ -195,19 +190,13 @@
     row.className = "ingredient-row";
     row.innerHTML = `
       <input type="text" name="ingredient_name" placeholder="Name" required>
-      <input type="number" name="ingredient_quantity" placeholder="Quantity" min="1" step="0.1" required>
-      <select name="ingredient_unit">
-        <option value="g">g</option>
-        <option value="cup">cup</option>
-        <option value="ml">ml</option>
-        <option value="tbsp">tbsp</option>
-        <option value="tsp">tsp</option>
-        <option value="pieces">pieces</option>
-      </select>
-      <input type="text" name="ingredient_cook_time" placeholder="Cook Time (e.g., 10 min)">
+      <input type="text" name="ingredient_quantity" placeholder="Quantity (optional)">
+      <input type="text" name="ingredient_cook_time" placeholder="Cook Time (optional)">
+      <input type="text" name="ingredient_note" placeholder="Short note (e.g. to taste, for frying)">
       <button type="button" onclick="this.parentElement.remove()">❌</button>
     `;
     wrapper.appendChild(row);
   }
 </script>
+
 {% endblock %}

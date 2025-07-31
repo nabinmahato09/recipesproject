@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Profile of {{ profile_user.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ profile_user.username }}’s Profile</h1>
+
+    {% if profile_user.profile.is_chef %}
+      <p><strong>Chef Specialty:</strong> {{ profile_user.profile.specialty }}</p>
+      <p><strong>Experience:</strong> {{ profile_user.profile.experience }}</p>
+    {% else %}
+      <p>This user is not a chef.</p>
+    {% endif %}
+
+    {% if user.is_authenticated and user != profile_user %}
+      <form id="follow-form" class="mb-3">
+        <button id="follow-btn"
+                data-username="{{ profile_user.username }}"
+                class="btn btn-outline-primary btn-sm rounded-pill px-4">
+          {% if is_following %}Following{% else %}Follow{% endif %}
+        </button>
+      </form>
+    {% endif %}
+
+    <h3 class="mt-4">Recipes by {{ profile_user.username }}</h3>
+    <div class="row">
+        {% for recipe in recipes %}
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                {% if recipe.image %}
+                    <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ recipe.title }}</h5>
+                    <p class="card-text">{{ recipe.description|truncatewords:20 }}</p>
+                    <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-primary">View Recipe</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p>No recipes by this user yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+  const followBtn = document.getElementById('follow-btn');
+  if (followBtn) {
+    const username = followBtn.dataset.username;
+
+    followBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      fetch(`/profile/${username}/toggle_follow/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.following) {
+          followBtn.textContent = "Following";
+          followBtn.classList.remove("btn-outline-primary");
+          followBtn.classList.add("btn-outline-danger");
+        } else {
+          followBtn.textContent = "Follow";
+          followBtn.classList.remove("btn-outline-danger");
+          followBtn.classList.add("btn-outline-primary");
+        }
+      });
+    });
+
+    followBtn.addEventListener('mouseover', () => {
+      if (followBtn.textContent === "Following") {
+        followBtn.textContent = "Unfollow";
+      }
+    });
+
+    followBtn.addEventListener('mouseout', () => {
+      if (followBtn.textContent === "Unfollow") {
+        followBtn.textContent = "Following";
+      }
+    });
+  }
+</script>
+{% endblock %}

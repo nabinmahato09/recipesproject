@@ -92,3 +92,21 @@ msgstr "तपाईंको मापदण्डसँग मेल खान
 msgid "View"
 msgstr "दृश्य"
 
+msgid "Panipuri is a popular South Asian street snack made of crispy hollow puris filled with spicy flavored water and a tangy potato-based stuffing. To prepare the puris, mix 1 cup of semolina (suji) with 1 tablespoon of all-purpose flour (maida), a pinch of baking soda, and a pinch of salt. Gradually add warm water to knead a stiff and smooth dough. Let it rest for about 30 minutes. Roll the dough very thin and cut it into small round discs using a lid or cutter. Deep-fry them in hot oil over medium-high heat until they puff up and turn golden brown. Drain and cool them completely before using."
+
+msgstr "पानीपुरी दक्षिण एशियाली अत्यन्तै लोकप्रिय चटपटे खाजाको परिकार हो, जसमा करक्रे पुरिमा मसलेदार पानी र स्वादिलो आलु मिश्रण भरिन्छ। पुरी बनाउनको लागि १ कप सूजी (semolina), १ टेबलचम्मच मैदा, एक चिम्टी बेकिङ सोडा र एक चिम्टी नुन मिसाइन्छ। त्यसलाई मनतातो पानी हाल्दै कडक र स्मूद आटा मोलिन्छ। आटालाई ३० मिनेटसम्म ढाकेर राख्नुपर्छ। त्यसपछि सानो–सानो बल बनाएर पातलो बेल्नुपर्छ र सानो कटर वा ढक्कनले गोलो काट्नुपर्छ। मध्यम–उचाइको तापमा तातो तेलमा पुरीहरू हालेर फुल्ने र सुनौलो हुने गरी फ्राई गर्नुपर्छ। फ्राई गरेपछि पेपर टावलमा राखेर तेल सुकाउनुहोस्।"
+
+
+msgid "The spicy pani or flavored water is made by blending 1 cup of fresh mint leaves, 1/2 cup coriander leaves, 2 green chilies, and 3 tablespoons of tamarind pulp into a fine paste using a little water. Mix this paste into 4 cups of cold water and add 1 teaspoon each of roasted cumin powder, chaat masala, and black salt, along with regular salt to taste. You can also add 2 tablespoons of lemon juice for extra tanginess. Refrigerate this pani for at least an hour for the best flavor."
+
+msgstr "पानी बनाउन १ कप पुदीना पात, १/२ कप धनियाँ पात, २ वटा हरियो खुर्सानी, ३ टेबलचम्मच इमलीको गुदा लिएर थोरै पानी हालेर मिक्सरमा पेस्ट बनाउनुहोस्। यो पेस्टलाई ४ कप चिसो पानीमा मिसाउनुहोस्। त्यसमा १/१ चम्चा भुजेको जीरा पाउडर, चाट मसला, कालो नुन र स्वादअनुसार नुन मिलाउनुहोस्। चाहिँ भएमा २ चम्चा कागतीको रस पनि थप्न सकिन्छ। पानिलाई कम्तीमा १ घण्टा फ्रिजमा राख्दा स्वाद अझ राम्रो हुन्छ।"
+
+msgid "For the stuffing, mash 2 boiled potatoes and mix with 1/2 cup boiled chickpeas or black chana. Add 1 finely chopped onion (optional), 1 teaspoon of chaat masala, 1/2 teaspoon of roasted cumin powder, and salt to taste. Garnish with chopped fresh coriander leaves and mix well."
+msgstr "आलुको भराइ बनाउन २ वटा उमालेको आलु मिच्नुहोस् र १/२ कप उबालेको चनासँग मिसाउनुहोस्। चाहिँ भएमा सानो प्याज काटेर थप्न सकिन्छ। त्यसमा १ चम्चा चाट मसला, १/२ चम्चा भुजेको जीरा पाउडर र स्वादअनुसार नुन राखेर राम्ररी मिलाउनुहोस्। माथिबाट काटेको धनियाँ पात राख्दा अझ स्वादिलो हुन्छ।"
+
+
+msgid "If you prefer a sweet and tangy flavor, you can also prepare a tamarind chutney by boiling 1/2 cup tamarind with 1/2 cup jaggery in 1 cup of water until it thickens. Add 1/2 teaspoon each of roasted cumin powder and black salt, then strain and let it cool."
+msgstr "यदि तपाईंले गुलियो स्वाद चाहनुहुन्छ भने, १/२ कप इमली, १/२ कप गुड र १ कप पानी एकसाथ उमालेर गाढा चटनी बनाउनुहोस्। त्यसमा १/२ चम्चा भुजेको जीरा र कालो नुन राखी छानेर चिसो पार्नुस्।"
+
+msgid "To serve panipuri, gently crack the top of each puri, fill it with a spoonful of the potato mixture, add a few drops of sweet chutney if desired, and finally pour in or dip the puri in the chilled spicy pani. Eat immediately to enjoy the crisp texture and explosion of flavors in every bite."
+msgstr "पानीपुरी खाने तरिका यस्तो हुन्छ: प्रत्येक पुरिको टप भाग हल्का फुटाएर भित्र १ चम्चा भराइ राख्नुहोस्। चाहनुहुन्छ भने गुलियो चटनी केही थोपा राख्नुस्। अनि चिसो मसालेदार पानीमा डुबाएर तुरुन्त खाँदा सबै स्वाद एकैपटक अनुभव गर्न पाइन्छ।"

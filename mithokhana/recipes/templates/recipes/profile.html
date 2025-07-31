@@ -1,11 +1,14 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}My Profile - Mitho Khana{% endblock %}
 
 {% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
 <style>
   body {
     background-color: #f0f2f5;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 
   .profile-container {
@@ -14,39 +17,51 @@
   }
 
   .cover-photo {
-    background-color: #4267B2;
-    height: 200px;
+    background: linear-gradient(120deg, #ff9a9e 0%, #fad0c4 100%);
+    height: 220px;
     position: relative;
-    border-radius: 8px 8px 0 0;
+    border-radius: 10px 10px 0 0;
   }
 
   .profile-pic {
-    width: 150px;
-    height: 150px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
-    border: 4px solid #fff;
+    border: 5px solid #fff;
     position: absolute;
-    bottom: -75px;
+    bottom: -70px;
     left: 30px;
     object-fit: cover;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  .action-buttons {
+    position: absolute;
+    right: 30px;
+    bottom: -30px;
   }
 
   .profile-card {
     background: #fff;
     margin-top: 90px;
-    padding: 20px;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 25px 30px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   }
 
   .section-title {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #e0e0e0;
     padding-bottom: 6px;
     margin-bottom: 15px;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 18px;
     color: #333;
+  }
+
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 20px;
   }
 
   .list-group-item {
@@ -54,12 +69,7 @@
     margin-bottom: 10px;
     padding: 15px;
     border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
-
-  .card-title {
-    font-size: 16px;
-    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
 
   .card-img-top {
@@ -68,57 +78,82 @@
     border-radius: 6px 6px 0 0;
   }
 
-  .btn {
-    margin-left: 5px;
-  }
-
   .bookmarked-card {
     background: #fff;
-    border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    overflow: hidden;
   }
 
+  .bookmarked-card h5 {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
 </style>
 
 <div class="profile-container">
-  <!-- Cover and profile image -->
+  <!-- Cover -->
   <div class="cover-photo">
-    {% if chef_profile and chef_profile.photo %}
-      <img src="{{ chef_profile.photo.url }}" alt="Profile Photo" class="profile-pic">
+    {% if profile.photo %}
+      <img src="{{ profile.photo.url }}" alt="Profile Photo" class="profile-pic">
     {% else %}
-      <img src="/static/default_profile.png" alt="Profile Photo" class="profile-pic">
+      <img src="{% static 'default_profile.png' %}" alt="Profile Photo" class="profile-pic">
     {% endif %}
+
+    <div class="action-buttons">
+      {% if is_own_profile %}
+        <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-outline-dark">✏️ Edit Profile</a>
+      {% else %}
+        <button id="follow-btn"
+                data-username="{{ user.username }}"
+                class="btn btn-outline-primary btn-sm rounded-pill px-4">
+          {% if is_following %}Following{% else %}Follow{% endif %}
+        </button>
+      {% endif %}
+    </div>
   </div>
 
+  <!-- Profile Info -->
   <div class="profile-card">
-    <h2>{{ user.username }}</h2>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    {% if user.first_name %}
-    <p><strong>Full Name:</strong> {{ user.first_name }}</p>
+    <h2 class="mb-2 text-capitalize">{{ user.username }}</h2>
+
+    {% if show_chef_badge %}
+      <span class="badge bg-success mb-2">👨‍🍳 Verified Chef</span>
     {% endif %}
 
-    {% if chef_profile %}
-      <div class="section-title">👨‍🍳 Chef Details</div>
-      <p><strong>Experience:</strong> {{ chef_profile.experience }} years</p>
-      <p><strong>Specialty:</strong> {{ chef_profile.specialty }}</p>
-      <p><strong>Bio:</strong> {{ chef_profile.bio }}</p>
+    <p><strong>Followers:</strong> <a href="{% url 'followers_list' user.username %}">{{ followers_count }}</a></p>
+    <p><strong>Following:</strong> <a href="{% url 'following_list' user.username %}">{{ following_count }}</a></p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+
+    {% if user.first_name %}
+      <p><strong>Full Name:</strong> {{ user.first_name }}</p>
     {% endif %}
+
+    {% if profile.is_chef %}
+      <p><strong>Experience:</strong> {{ profile.experience }} year{{ profile.experience|pluralize }}</p>
+      <p><strong>Specialty:</strong> {{ profile.specialty }}</p>
+    {% endif %}
+
+    <p><strong>Bio:</strong> {{ profile.bio }}</p>
   </div>
 
-  <!-- My Recipes -->
-  <div class="mt-4">
+  <!-- Recipes -->
+  <div class="mt-5">
     <div class="section-title">🍽️ My Recipes</div>
     {% if my_recipes %}
       <div class="list-group">
         {% for recipe in my_recipes %}
-        <div class="list-group-item d-flex justify-content-between align-items-center">
-          <div>{{ recipe.title }}</div>
-          <div>
-            <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-outline-info">View</a>
-            <a href="{% url 'edit_recipe' recipe.pk %}" class="btn btn-sm btn-outline-warning">Edit</a>
-            <a href="{% url 'delete_recipe' recipe.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>{{ recipe.title }}</div>
+            <div>
+              <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-outline-info">View</a>
+              {% if is_own_profile %}
+                <a href="{% url 'edit_recipe' recipe.pk %}" class="btn btn-sm btn-outline-warning">Edit</a>
+                <a href="{% url 'delete_recipe' recipe.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+              {% endif %}
+            </div>
           </div>
-        </div>
         {% endfor %}
       </div>
     {% else %}
@@ -126,28 +161,64 @@
     {% endif %}
   </div>
 
-  <!-- Bookmarked -->
-  <div class="mt-4">
+  <!-- Bookmarks -->
+  <div class="mt-5">
     <div class="section-title">📥 Bookmarked Recipes</div>
     {% if bookmarked %}
-    <div class="row">
-      {% for recipe in bookmarked %}
-      <div class="col-md-4 mb-3">
-        <div class="bookmarked-card">
-          {% if recipe.image %}
-          <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}">
-          {% endif %}
-          <div class="p-3 d-flex flex-column">
-            <h5 class="card-title">{{ recipe.title }}</h5>
-            <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-primary mt-auto">View</a>
+      <div class="row">
+        {% for recipe in bookmarked %}
+          <div class="col-md-4 mb-4">
+            <div class="bookmarked-card">
+              {% if recipe.image %}
+                <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}">
+              {% endif %}
+              <div class="p-3 d-flex flex-column">
+                <h5 class="card-title">{{ recipe.title }}</h5>
+                <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-primary mt-auto">View</a>
+              </div>
+            </div>
           </div>
-        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
     {% else %}
       <p class="text-muted">You haven't bookmarked any recipes yet.</p>
     {% endif %}
   </div>
 </div>
+
+<script>
+  const followBtn = document.getElementById('follow-btn');
+  if (followBtn) {
+    const username = followBtn.dataset.username;
+    followBtn.addEventListener('click', function () {
+      fetch(`/profile/${username}/toggle_follow/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      })
+      .then(res => res.json())
+      .then(data => {
+        followBtn.textContent = data.following ? "Following" : "Follow";
+        followBtn.classList.toggle("btn-outline-primary", !data.following);
+        followBtn.classList.toggle("btn-outline-danger", data.following);
+      });
+    });
+
+    followBtn.addEventListener('mouseover', () => {
+      if (followBtn.textContent === "Following") {
+        followBtn.textContent = "Unfollow";
+      }
+    });
+
+    followBtn.addEventListener('mouseout', () => {
+      if (followBtn.textContent === "Unfollow") {
+        followBtn.textContent = "Following";
+      }
+    });
+  }
+</script>
+
 {% endblock %}

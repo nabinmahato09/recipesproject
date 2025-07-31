@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register - Mitho Khana{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background-color: #fffaf3;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .register-wrapper {
+    max-width: 500px;
+    margin: 50px auto;
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  }
+
+  .register-wrapper h2 {
+    text-align: center;
+    color: #d84315;
+    margin-bottom: 20px;
+  }
+
+  form label {
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 14px;
+    display: block;
+    color: #333;
+  }
+
+  form input, form textarea, form select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fffaf6;
+    font-size: 14px;
+  }
+
+  form input[type="file"] {
+    padding: 7px;
+  }
+
+  form textarea {
+    resize: vertical;
+  }
+
+  .btn-submit {
+    background: #ff5722;
+    color: white;
+    font-weight: 600;
+    width: 100%;
+    padding: 11px 0;
+    margin-top: 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-submit:hover {
+    background-color: #e64a19;
+  }
+
+  .form-section {
+    margin-top: 30px;
+  }
+
+  .chef-fields {
+    display: none;
+    padding: 10px;
+    background: #fff3e0;
+    border-radius: 6px;
+    margin-top: 15px;
+  }
+
+  .form-error {
+    background-color: #ffeaea;
+    color: #b71c1c;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+
+  .toggle-chef {
+    margin-top: 10px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+
+  .toggle-chef input {
+    margin-right: 6px;
+  }
+</style>
+
+<div class="register-wrapper">
+  <h2>Create Your Account</h2>
+
+  {% if user_form.errors or profile_form.errors %}
+    <div class="form-error">
+      <ul>
+        {% for field in user_form %}
+          {% for error in field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for error in user_form.non_field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+        {% for field in profile_form %}
+          {% for error in field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data" id="registerForm">
+    {% csrf_token %}
+
+    <!-- Account Fields -->
+    {{ user_form.username.label_tag }} {{ user_form.username }}
+    {{ user_form.email.label_tag }} {{ user_form.email }}
+    {{ user_form.password1.label_tag }} {{ user_form.password1 }}
+    {{ user_form.password2.label_tag }} {{ user_form.password2 }}
+
+    <!-- Optional Chef Toggle -->
+    <div class="toggle-chef">
+      {{ profile_form.is_chef }} <label for="id_is_chef">I am a Chef</label>
+    </div>
+
+    <!-- Chef Fields (Hidden unless checked) -->
+    <div class="chef-fields" id="chefFields">
+      {{ profile_form.experience.label_tag }} {{ profile_form.experience }}
+      {{ profile_form.specialty.label_tag }} {{ profile_form.specialty }}
+    </div>
+
+    <!-- Common Profile Fields -->
+    <div class="form-section">
+      {{ profile_form.bio.label_tag }} {{ profile_form.bio }}
+      {{ profile_form.photo.label_tag }} {{ profile_form.photo }}
+    </div>
+
+    <button type="submit" class="btn-submit">Register</button>
+  </form>
+</div>
+
+<script>
+  const isChefCheckbox = document.getElementById("id_is_chef");
+  const chefFields = document.getElementById("chefFields");
+
+  function toggleChefFields() {
+    chefFields.style.display = isChefCheckbox.checked ? "block" : "none";
+  }
+
+  isChefCheckbox.addEventListener('change', toggleChefFields);
+  window.addEventListener('DOMContentLoaded', toggleChefFields);
+</script>
+{% endblock %}

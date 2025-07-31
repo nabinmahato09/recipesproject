@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile - Mitho Khana{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow border-0">
+        <div class="card-header bg-white">
+          <h4 class="mb-0 text-center">👤 Edit Profile</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              {{ form.fullname }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Profile Picture</label>
+              {% if user.profile.photo %}
+                <img src="{{ user.profile.photo.url }}" class="img-thumbnail mb-2" style="max-width: 150px;" alt="Profile Photo">
+              {% endif %}
+              {{ form.photo }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Bio</label>
+              {{ form.bio }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Experience</label>
+              {{ form.experience }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Specialty</label>
+              {{ form.specialty }}
+            </div>
+
+            <div class="form-check mb-4">
+              {{ form.is_chef }}
+              <label class="form-check-label">I am a Chef</label>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+              <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+              <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
