@@ -2,20 +2,114 @@
 {% block title %}Festival Calendar - Mitho Khana{% endblock %}
 
 {% block content %}
+<style>
+  .festival-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .add-festival-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+  }
+
+  .add-festival-btn:hover {
+    background-color: #218838;
+  }
+
+  .filter-box {
+    margin-bottom: 20px;
+  }
+
+  .festival-card {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .festival-card-header {
+    background: linear-gradient(45deg, #ff6b6b, #ffcc70);
+    color: #fff;
+    padding: 15px;
+  }
+
+  .festival-card-body {
+    background-color: #fff8f0;
+    padding: 20px;
+  }
+
+  .featured-recipe-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .featured-recipe-card:hover {
+    transform: scale(1.01);
+  }
+
+  .featured-recipe-card img {
+    height: 180px;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .featured-recipe-body {
+    padding: 15px;
+  }
+
+  .view-btn {
+    background-color: #ff8c42;
+    color: white;
+    border-radius: 5px;
+    padding: 6px 12px;
+    text-decoration: none;
+    font-size: 0.8rem;
+  }
+
+  .view-btn:hover {
+    background-color: #e6762f;
+  }
+</style>
+
 <div class="container mt-4">
-  <h2 class="mb-4 text-center">📅 Festival-Based Recipe Calendar</h2>
+  <div class="festival-header">
+    <h2 class="text-center">📅 Festival-Based Recipe Calendar</h2>
+    {% if user.is_staff %}
+      <a href="{% url 'festival_calendar' %}" class="add-festival-btn">+ Add Festival</a>
+    {% endif %}
+  </div>
+
+  <!-- Filter By Month -->
+  <div class="filter-box">
+    <form method="get">
+      <label for="month">🔍 Filter by Month:</label>
+      <select name="month" id="month" onchange="this.form.submit()" class="form-select w-auto d-inline-block ms-2">
+        <option value="">All</option>
+        {% for m in months %}
+          <option value="{{ m }}" {% if m == selected_month %}selected{% endif %}>{{ m }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
 
   {% if festivals %}
     {% for festival in festivals %}
-      <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-          <div>
-            <h5 class="mb-0">{{ festival.name }}</h5>
-            <small>{{ festival.date|date:"F j, Y" }}</small>
-          </div>
+      <div class="card festival-card mb-4 shadow-sm">
+        <div class="festival-card-header">
+          <h5 class="mb-0">{{ festival.name }}</h5>
+          <small>{{ festival.date|date:"F j, Y" }}</small>
         </div>
 
-        <div class="card-body">
+        <div class="festival-card-body">
           <p>{{ festival.description }}</p>
 
           {% if festival.recipes.all %}
@@ -23,27 +117,27 @@
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
               {% for recipe in festival.recipes.all %}
                 <div class="col">
-                  <div class="card h-100 border-0 shadow-sm">
+                  <div class="featured-recipe-card h-100">
                     {% if recipe.image %}
-                      <img src="{{ recipe.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ recipe.title }}">
+                      <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}">
                     {% endif %}
-                    <div class="card-body d-flex flex-column">
-                      <h6 class="card-title">{{ recipe.title }}</h6>
+                    <div class="featured-recipe-body d-flex flex-column">
+                      <h6>{{ recipe.title }}</h6>
                       <p class="text-muted small">{{ recipe.description|truncatewords:15 }}</p>
-                      <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-sm btn-outline-primary mt-auto">View Recipe</a>
+                      <a href="{% url 'recipe_detail' recipe.pk %}" class="view-btn mt-auto">View Recipe</a>
                     </div>
                   </div>
                 </div>
               {% endfor %}
             </div>
           {% else %}
-            <p class="text-muted fst-italic">No recipes added for this festival yet.</p>
+            <p class="text-muted fst-italic">No recipes for this festival yet.</p>
           {% endif %}
         </div>
       </div>
     {% endfor %}
   {% else %}
-    <p class="text-muted text-center">No upcoming festivals added yet.</p>
+    <p class="text-muted text-center">No festivals found for the selected month.</p>
   {% endif %}
 </div>
 {% endblock %}

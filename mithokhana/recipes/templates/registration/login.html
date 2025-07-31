@@ -2,15 +2,85 @@
 {% block title %}Login - Mitho Khana{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h2 class="mb-4">🔐 Login to Your Account</h2>
+<style>
+  body {
+    background: linear-gradient(to right, #fff8f0, #ffe4e1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .login-container {
+    max-width: 500px;
+    margin: 80px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: 1px solid #ffd7c2;
+  }
+
+  .login-container h2 {
+    text-align: center;
+    font-weight: bold;
+    color: #d35400;
+    margin-bottom: 25px;
+  }
+
+  .login-container form label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .login-container form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ffccbc;
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+
+  .login-container form input:focus {
+    border-color: #ff7043;
+    box-shadow: 0 0 5px rgba(255,112,67,0.3);
+  }
+
+  .btn {
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: 600;
+    margin-right: 10px;
+  }
+
+  .btn-primary {
+    background-color: #e67e22;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #d35400;
+  }
+
+  .btn-secondary {
+    background-color: #f39c12;
+    border: none;
+  }
+
+  .btn-secondary:hover {
+    background-color: #e67e22;
+  }
+
+</style>
+
+<div class="login-container">
+  <h2>🔐 Login to Your Account</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Login</button>
-    <a href="{% url 'recipe_list' %}" class="btn btn-secondary">Cancel</a>
-   
+    <div class="text-center mt-3">
+      <button type="submit" class="btn btn-primary">Login</button>
+      <a href="{% url 'recipe_list' %}" class="btn btn-secondary">Cancel</a>
+      <a href="{% url 'register_chef' %}" class="btn btn-secondary">Register</a>
+    </div>
   </form>
-
 </div>
 {% endblock %}

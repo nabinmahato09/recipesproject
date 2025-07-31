@@ -1,43 +1,137 @@
-<!-- templates/recipes/upload_recipe.html -->
 {% extends 'base.html' %}
 {% load i18n %}
 {% block title %}Upload Recipe - Mitho Khana{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<style>
+  body {
+    background: linear-gradient(to right, #fffaf0, #ffe4e1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .upload-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #ffd5c2;
+  }
+
+  .upload-container h1 {
+    text-align: center;
+    font-weight: bold;
+    color: #e67e22;
+    margin-bottom: 25px;
+  }
+
+  label {
+    font-weight: 600;
+    color: #444;
+  }
+
+  .form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #f2c2a8;
+    margin-top: 5px;
+    transition: border-color 0.3s;
+  }
+
+  .form-control:focus, .form-select:focus {
+    border-color: #ff7f50;
+    box-shadow: 0 0 4px rgba(255, 127, 80, 0.3);
+  }
+
+  .ingredient-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+    background: #fff6f2;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px dashed #ffb199;
+  }
+
+  .ingredient-row input,
+  .ingredient-row select {
+    flex: 1 1 auto;
+    min-width: 100px;
+    padding: 8px;
+    border: 1px solid #f2c2a8;
+    border-radius: 6px;
+  }
+
+  .ingredient-row button {
+    background-color: transparent;
+    border: none;
+    color: #c0392b;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  button[type="button"] {
+    background-color: #f8c291;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  button[type="button"]:hover {
+    background-color: #e67e22;
+  }
+
+  .btn-success {
+    background-color: #27ae60;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: bold;
+  }
+
+  .btn-secondary {
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: bold;
+  }
+
+  .alert-danger {
+    background-color: #ffdddd;
+    color: #b00020;
+    padding: 10px 15px;
+    border-left: 5px solid #b00020;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+</style>
+
+<div class="upload-container">
   <h1>{% trans "Upload Recipe" %}</h1>
 
   {% if error %}
     <div class="alert alert-danger">{{ error }}</div>
   {% endif %}
 
-  <form method="POST" enctype="multipart/form-data" class="bg-light p-4 rounded shadow-sm">
+  <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 
     <div class="mb-3">
-      <label>🍛{% trans "Title" %}</label>
+      <label>🍛 {% trans "Title" %}</label>
       <input type="text" name="title" class="form-control" required>
     </div>
 
-    <h6>{% trans "Ingredients" %}</h6>
-    <style>.ingredient-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .ingredient-row input, .ingredient-row select {
-      padding: 6px;
-      flex: 1 1 auto;
-      min-width: 100px;
-    }</style>
+    <h6 class="mt-4 mb-2">{% trans "Ingredients" %}</h6>
+
     <div id="ingredients-wrapper">
       {% for ingredient in recipe.ingredients.all %}
         <div class="ingredient-row">
           <input type="text" name="ingredient_name" placeholder="Name" value="{{ ingredient.name }}" required>
-          
           <input type="number" name="ingredient_quantity" placeholder="Quantity" value="{{ ingredient.quantity|default_if_none:'' }}" min="1" step="0.1" required>
-          
           <select name="ingredient_unit">
             <option value="g" {% if "g" in ingredient.quantity %}selected{% endif %}>g</option>
             <option value="cup" {% if "cup" in ingredient.quantity %}selected{% endif %}>cup</option>
@@ -46,24 +140,20 @@
             <option value="tsp" {% if "tsp" in ingredient.quantity %}selected{% endif %}>tsp</option>
             <option value="pieces" {% if "pieces" in ingredient.quantity %}selected{% endif %}>pieces</option>
           </select>
-    
           <input type="text" name="ingredient_cook_time" placeholder="Cook Time (e.g., 10 min)" value="{{ ingredient.cook_time }}">
-          
           <button type="button" onclick="this.parentElement.remove()">❌</button>
         </div>
       {% endfor %}
     </div>
-    
+
     <button type="button" onclick="addIngredient()">➕ {% trans "Add Ingredient" %}</button>
 
-    
-
-    <div class="mb-3">
-      <label class="form-label">📂{% trans "Category" %}</label>
+    <div class="mb-3 mt-4">
+      <label class="form-label">📂 {% trans "Category" %}</label>
       <select name="category" class="form-select" required>
         <option value="">-- Select Category --</option>
         {% for category in categories %}
-        <option value="{{ category.id }}">{{ category.name }}</option>
+          <option value="{{ category.id }}">{{ category.name }}</option>
         {% endfor %}
       </select>
     </div>
@@ -73,7 +163,7 @@
       <select name="region" class="form-select" required>
         <option value="">-- Select Region --</option>
         {% for region in regions %}
-        <option value="{{ region.id }}">{{ region.name }}</option>
+          <option value="{{ region.id }}">{{ region.name }}</option>
         {% endfor %}
       </select>
     </div>
@@ -89,15 +179,15 @@
     </div>
 
     <div class="mb-3">
-      <label for="description" class="form-label">📝 {% trans "Description" %}</label>
+      <label class="form-label">📝 {% trans "Description" %}</label>
       <textarea name="description" rows="4" class="form-control" required></textarea>
     </div>
-    
 
     <button type="submit" class="btn btn-success">{% trans "Upload Recipe" %}</button>
     <a href="{% url 'recipe_list' %}" class="btn btn-secondary ms-2">{% trans "Back to List" %}</a>
   </form>
 </div>
+
 <script>
   function addIngredient() {
     const wrapper = document.getElementById("ingredients-wrapper");
@@ -105,9 +195,7 @@
     row.className = "ingredient-row";
     row.innerHTML = `
       <input type="text" name="ingredient_name" placeholder="Name" required>
-      
       <input type="number" name="ingredient_quantity" placeholder="Quantity" min="1" step="0.1" required>
-  
       <select name="ingredient_unit">
         <option value="g">g</option>
         <option value="cup">cup</option>
@@ -116,13 +204,10 @@
         <option value="tsp">tsp</option>
         <option value="pieces">pieces</option>
       </select>
-  
       <input type="text" name="ingredient_cook_time" placeholder="Cook Time (e.g., 10 min)">
-      
       <button type="button" onclick="this.parentElement.remove()">❌</button>
     `;
     wrapper.appendChild(row);
   }
-  </script>
-  
+</script>
 {% endblock %}

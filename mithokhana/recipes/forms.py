@@ -45,3 +45,4 @@ class ChefRegistrationForm(forms.ModelForm):
         if commit:
             chef.save()
         return chef
+   

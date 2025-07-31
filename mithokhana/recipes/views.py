@@ -10,6 +10,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
 from textwrap import wrap
 import random
+import calendar
 
 from .models import Recipe, Category, Region, Comment, Festival, Chef, Ingredient
 from .forms import ChefRegistrationForm
@@ -17,6 +18,7 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.models import User 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
 
 def recipe_list(request):
     query = request.GET.get('q', '')
@@ -261,8 +263,18 @@ def profile(request):
 
 
 def festival_calendar(request):
-    festivals = Festival.objects.prefetch_related('recipes').order_by('date')
-    return render(request, 'recipes/festival_calendar.html', {'festivals': festivals})
+    month = request.GET.get('month')
+    festivals = Festival.objects.all()
+    
+    if month:
+        festivals = festivals.filter(date__month=list(calendar.month_name).index(month))
+    
+    context = {
+        'festivals': festivals,
+        'months': list(calendar.month_name)[1:],  # ['January', ..., 'December']
+        'selected_month': month,
+    }
+    return render(request, 'recipes/festival_calendar.html', context)
 
 
 @require_POST

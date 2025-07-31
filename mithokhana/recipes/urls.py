@@ -33,6 +33,9 @@ urlpatterns = [
     path('chef/<int:chef_id>/', views.chef_profile, name='chef_profile'),
 
     path('recommended/', views.recommended_recipes, name='recommended_recipes'),
+    
+    
+
 
 ]
 
